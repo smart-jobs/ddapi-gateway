@@ -12,3 +12,4 @@ run/
 *.un~
 .travis.yml
 .appveyor.yml
+appveyor.yml
