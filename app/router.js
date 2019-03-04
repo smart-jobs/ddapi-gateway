@@ -11,5 +11,6 @@ module.exports = app => {
 
   router.get('/auth/', controller.auth.index);
   router.get('/auth/test', controller.auth.test);
+  router.all('/auth/userinfo', controller.auth.index);
 };
 

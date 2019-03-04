@@ -25,6 +25,7 @@
         onSuccess: function (result) {
           $('.weui-msg__desc').text(result.code);
           console.log(result);
+          location.replace('test?code='+result.code);
         },
         onFail: function (err) {
           console.error(err);

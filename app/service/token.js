@@ -1,6 +1,11 @@
 'use strict';
 
+const assert = require('assert');
+const querystring = require('querystring');
+const url = require('url');
 const Service = require('egg').Service;
+const _ = require('lodash');
+const isChinese = require('is-chinese');
 const { BusinessError, ErrorCode } = require('naf-core').Error;
 
 class TokenService extends Service {
@@ -31,7 +36,47 @@ class TokenService extends Service {
 
     return { access_token, expires_in };
   }
+  /** 调用带token的api，token信息自动添加 */
+  async tokenApi({ api, method = 'GET', params = {}, data, errText }) {
+    assert(api, 'api参数不能为空');
 
+    // TODO: 构建带AccessToken的完整请求URL
+    const access_token = await this.getToken();
+    const query = { access_token, ...params };
+    let uri = url.resolve('https://oapi.dingtalk.com/', api);
+    uri += '?' + querystring.stringify(query);
+
+    const res = await this.ctx.curl(uri, { method, data, dataType: 'json' });
+    if (res.status !== 200) {
+      throw new BusinessError(ErrorCode.NETWORK, `Http Code: ${res.status}`, res.data);
+    }
+
+    const { errcode, errmsg } = res.data;
+    if (errcode) {
+      throw new BusinessError(ErrorCode.SERVICE_FAULT, (isChinese(errmsg) && errmsg) || errText || '调用接口失败', `${errcode} - ${errmsg}`);
+    }
+
+    return _.omit(res.data, 'errcode', 'errmsg');
+  }
+
+  apiGet(api, params = {}, errText) {
+    return this.tokenApi({ api, method: 'GET', params, errText });
+  }
+
+  apiPost(api, params = {}, data, errText) {
+    return this.tokenApi({ api, method: 'POST', params, data, errText });
+  }
+
+  async getCache(name) {
+    const key = `dd:cache:${name}`;
+    const val = await this.app.redis.get(key);
+    return val;
+  }
+
+  async setCache(name, val, expires_in = 300) {
+    const key = `dd:cache:${name}`;
+    await this.app.redis.set(key, val, 'EX', expires_in);
+  }
 }
 
 module.exports = TokenService;

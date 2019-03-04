@@ -1,0 +1,56 @@
+{
+  "orderInDepts": "{1:176371829084387512,94069033:176371829084387511}",
+  "position": "",
+  "remark": "",
+  "department": [
+    1,
+    94069033
+  ],
+  "unionid": "WVanSVBKj5uniSIhgUpBQ1AiEiE",
+  "tel": "",
+  "userid": "226217043733448926",
+  "isSenior": false,
+  "workPlace": "",
+  "isBoss": false,
+  "name": "董永关",
+  "tags": {},
+  "extattr": {},
+  "stateCode": "86",
+  "avatar": "https://static.dingtalk.com/media/lADPDgQ9qZJUuTLNAkDNAkA_576_576.jpg",
+  "jobnumber": "",
+  "isLeaderInDepts": "{1:false,94069033:false}",
+  "email": "",
+  "roles": [
+    {
+      "id": 391181202,
+      "name": "培训",
+      "groupName": "公文"
+    },
+    {
+      "id": 385697576,
+      "name": "主管理员",
+      "groupName": "默认",
+      "type": 101
+    },
+    {
+      "id": 391292062,
+      "name": "公文",
+      "groupName": "业务"
+    },
+    {
+      "id": 391463286,
+      "name": "招聘",
+      "groupName": "业务"
+    },
+    {
+      "id": 391390564,
+      "name": "中心",
+      "groupName": "平台"
+    }
+  ],
+  "active": true,
+  "isAdmin": true,
+  "openId": "WVanSVBKj5uniSIhgUpBQ1AiEiE",
+  "mobile": "13596086660",
+  "isHide": false
+}

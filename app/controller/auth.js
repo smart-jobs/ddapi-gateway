@@ -1,5 +1,6 @@
 'use strict';
 
+const assert = require('assert');
 const Controller = require('egg').Controller;
 
 class AuthController extends Controller {
@@ -23,15 +24,29 @@ class AuthController extends Controller {
     const dingtalk = /DingTalk/i.test(agent);
     const win = /dingtalk-win/i.test(agent);
     const { corpId } = this.config;
-    console.log('corpId:', corpId);
+    this.logger.debug('corpId:', corpId);
 
     if (!dingtalk) {
       await this.ctx.render('info.njk', { title: '浏览器', message: agent });
     } else if (win) {
-      await this.ctx.render('auth_pc.njk', { title: 'DingTalk', message: 'PC版', corpId });
+      const { code } = this.ctx.query;
+      if (code) {
+        const userinfo = await this.service.user.userinfo({ code });
+        await this.ctx.render('info.njk', { title: 'DingTalk', message: JSON.stringify(userinfo) });
+      } else {
+        await this.ctx.render('auth_pc.njk', { title: 'DingTalk', message: 'PC版', corpId });
+      }
     } else {
-      await this.ctx.render('info.njk', { title: 'DingTalk', message: '手机版', corpId });
+      await this.ctx.render('info.njk', { title: 'DingTalk', message: '请使用PC版钉钉打开应用', corpId });
     }
+  }
+
+  async userinfo() {
+    const { ctx } = this;
+    const { code } = ctx.query;
+    assert(code, 'code不能为空');
+    const userinfo = await this.service.token.userinfo({ code });
+    ctx.ok({ data: userinfo });
   }
 
 }
