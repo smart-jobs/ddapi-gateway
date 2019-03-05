@@ -15,5 +15,9 @@ module.exports = () => {
     consoleLevel: 'DEBUG',
   };
 
+  config.unit = {
+    apiUrl: 'http://smart.chinahuian.cn/www/api/naf/unit/list',
+  };
+
   return config;
 };

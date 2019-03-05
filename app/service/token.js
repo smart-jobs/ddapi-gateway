@@ -70,12 +70,19 @@ class TokenService extends Service {
   async getCache(name) {
     const key = `dd:cache:${name}`;
     const val = await this.app.redis.get(key);
+    try {
+      if (val) return JSON.parse(val);
+    } catch (e) { this.logger.warn('parse cache fail', e); }
     return val;
   }
 
-  async setCache(name, val, expires_in = 300) {
+  async setCache(name, val, expires_in) {
+    if (!expires_in) {
+      expires_in = _.get(this.app.config, 'ddapi.expiresIn');
+    }
+    if (val && _.isObject(val)) val = JSON.stringify(val);
     const key = `dd:cache:${name}`;
-    await this.app.redis.set(key, val, 'EX', expires_in);
+    await this.app.redis.set(key, val, 'EX', expires_in || 300);
   }
 }
 
