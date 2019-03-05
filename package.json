@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "dingding api gateway",
   "private": true,
+  "egg": {
+    "framework": "naf-framework-mongoose"
+  },
   "dependencies": {
-    "egg": "^2.18.0",
+    "egg": "^2.19.0",
     "egg-redis": "^2.3.0",
     "egg-scripts": "^2.11.0",
     "egg-view-nunjucks": "^2.2.0",
     "is-chinese": "^1.2.6",
+    "jsonwebtoken": "^8.5.0",
     "naf-core": "0.1.2",
     "naf-framework-mongoose": "^0.5.17"
   },
@@ -18,7 +22,7 @@
     "egg-bin": "^4.11.0",
     "egg-ci": "^1.11.0",
     "egg-mock": "^3.21.0",
-    "eslint": "^5.14.1",
+    "eslint": "^5.15.1",
     "eslint-config-egg": "^7.1.0",
     "webstorm-disable-index": "^1.2.0"
   },

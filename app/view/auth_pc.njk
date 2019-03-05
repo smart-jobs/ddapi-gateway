@@ -6,7 +6,7 @@
   <meta charset="utf-8"></meta>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0"></meta>
   <link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/open/libs/weui/1.1.2/weui.min.css"></link>
-  <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script>
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://g.alicdn.com/dingding/dingtalk-pc-api/2.7.0/index.js"></script>
 </head>
 
@@ -15,22 +15,45 @@
     <div class="weui-msg__icon-area"><i class="weui-icon-waiting weui-icon_msg"></i></div>
     <div class="weui-msg__text-area">
       <h2 class="weui-msg__title">{{ title | d("正在跳转，请稍候")}}</h2>
-      <p class="weui-msg__desc">{{message}}</p>
+      <p class="weui-msg__desc">{{ message }}</p>
     </div>
   </div>
   <script>
-    window.onload = function() {
+    var redirect_uri = '{{redirect_uri}}';
+    
+    $(function() {
       DingTalkPC.runtime.permission.requestAuthCode({
         corpId: '{{corpId}}', //企业ID
         onSuccess: function (result) {
-          $('.weui-msg__desc').text(result.code);
-          console.log(result);
-          location.replace('test?code='+result.code);
+          console.log('requestAuthCode: ', result);
+          login(result.code);
         },
         onFail: function (err) {
           console.error(err);
         }
       });
+    });
+
+    function login(code) {
+			$.post('auth/login', { code: code })
+		  	.then(function(res) {
+					console.log(res);
+					if (res.errcode == 0) {
+						$('.weui-msg__desc').text('用户认证成功');
+            sessionStorage.setItem('token', res.token);
+            sessionStorage.setItem('user', JSON.stringify(res.userinfo));
+            window.location.replace(redirect_uri);
+					} else {
+						return $.Deferred().reject(result.errmsg); 
+					}
+				}).fail(function( jqXHR, textStatus, errorThrown ) {
+					var msg = "登录失败！";
+					if(typeof jqXHR == "string")
+						msg = jqXHR;
+					$('.weui-msg__desc').text(msg);
+				}).always(function(){
+					// app.loading = false;
+			});
     }
   </script>
 </body>

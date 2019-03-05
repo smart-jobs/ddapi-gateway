@@ -14,5 +14,4 @@ exports.nunjucks = {
 
 exports.mongoose = {
   enable: false,
-  package: 'egg-mongoose',
 };

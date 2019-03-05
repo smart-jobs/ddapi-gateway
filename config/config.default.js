@@ -16,6 +16,14 @@ module.exports = appInfo => {
   // add your config here
   config.middleware = [];
 
+  // 安全配置
+  config.security = {
+    csrf: {
+      // ignoreJSON: true, // 默认为 false，当设置为 true 时，将会放过所有 content-type 为 `application/json` 的请求
+      enable: false,
+    },
+  };
+
   // redis config
   config.redis = {
     client: {
@@ -53,6 +61,11 @@ module.exports = appInfo => {
     secret: 'Ziyouyanfa!@#',
     expiresIn: '2h',
     issuer: 'platform',
+  };
+
+  // for test only
+  config.test = {
+    enable: true,
   };
 
   return config;

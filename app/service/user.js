@@ -1,20 +1,32 @@
 'use strict';
 
 const _ = require('lodash');
+const assert = require('assert');
 const TokenService = require('./token');
 const { BusinessError, ErrorCode } = require('naf-core').Error;
+const jwt = require('jsonwebtoken');
 
 class UserService extends TokenService {
-  async userinfo({ code }) {
+  async user_get({ code }) {
     // TODO: 获取用户信息
-    const { userid } = await this.apiGet('/user/getuserinfo', { code }, '获取用户信息失败');
+    const key = `user_code:${code}`;
+    const cached = await this.getCache(key);
+    const { userid } = cached || await this.apiGet('/user/getuserinfo', { code }, '获取用户信息失败');
+    if (!cached) {
+      await this.setCache(key, { userid });
+    }
 
-    const key = `userinfo:${userid}`;
+    return await this.user_data({ userid });
+  }
+
+  // TODO: 获取用户数据，包括用户基本信息、单位、部门、角色
+  async user_data({ userid }) {
+    const key = `user_data:${userid}`;
     const cached = await this.getCache(key);
     if (cached) return cached;
 
     // TODO: 获取用户详细信息
-    let userinfo = await this.apiGet('/user/get', { userid }, '获取用户详情失败');
+    const userinfo = await this.apiGet('/user/get', { userid }, '获取用户详情失败');
 
     // TODO: 获得部门名称
     const dept_names = await this.list_parent_names({ userid });
@@ -28,9 +40,9 @@ class UserService extends TokenService {
     unit = unit && _.pick(unit, 'name', 'code');
 
     const { name, mobile, isAdmin, email, tel } = userinfo;
-    userinfo = { userid, name, mobile, isAdmin, email, tel, depts: dept_names, roles: role_names, unit };
-    await this.setCache(key, userinfo);
-    return userinfo;
+    const data = { userid, name, mobile, isAdmin, email, tel, depts: dept_names, tags: role_names, unit };
+    await this.setCache(key, data);
+    return data;
   }
 
   async list_parent_depts({ userid }) {
@@ -98,6 +110,31 @@ class UserService extends TokenService {
     return unit;
   }
 
+  // 创建指定用户的登录凭证
+  async createJwt(userinfo) {
+    // TODO:参数检查和默认参数处理
+    assert(userinfo, 'userinfo不能为空');
+
+    const { userid, unit } = userinfo;
+    const tenant = (unit && unit.code) || 'master';
+    const { secret, expiresIn = '1h', issuer = 'dingtalk' } = this.config.jwt;
+    const token = await jwt.sign(userinfo, secret, { expiresIn, issuer, subject: `${userid}@${tenant}` });
+    return { userinfo, token };
+  }
+
+  // 使用认证code登录，生成登录凭证
+  async loginJwt({ code, userid }) {
+    // TODO:参数检查和默认参数处理
+    assert(userid || code, 'code不能为空');
+
+    let userinfo;
+    if (userid) {
+      userinfo = await this.user_data({ userid });
+    } else {
+      userinfo = await this.user_get({ code });
+    }
+    return await this.createJwt(userinfo);
+  }
 }
 
 module.exports = UserService;

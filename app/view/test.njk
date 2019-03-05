@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>页面跳转...</title>
+  <meta charset="utf-8"></meta>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0"></meta>
+  <link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/open/libs/weui/1.1.2/weui.min.css"></link>
+  <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script>
+  <script src="https://g.alicdn.com/dingding/dingtalk-pc-api/2.7.0/index.js"></script>
+</head>
+
+<body>
+  <div class="weui-msg">
+    <div class="weui-msg__icon-area"><i class="weui-icon-waiting weui-icon_msg"></i></div>
+    <div class="weui-msg__text-area">
+      <h2 class="weui-msg__title">{{ title | d("正在跳转，请稍候")}}</h2>
+      <p class="weui-msg__desc">{{message}}</p>
+    </div>
+  </div>
+  <script>
+    window.onload = function() {
+      DingTalkPC.runtime.permission.requestAuthCode({
+        corpId: '{{corpId}}', //企业ID
+        onSuccess: function (result) {
+          $('.weui-msg__desc').text(result.code);
+          console.log(result);
+          location.replace('test?code='+result.code);
+        },
+        onFail: function (err) {
+          console.error(err);
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
