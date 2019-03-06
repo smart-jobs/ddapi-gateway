@@ -15,17 +15,18 @@
     <div class="weui-msg__icon-area"><i class="weui-icon-waiting weui-icon_msg"></i></div>
     <div class="weui-msg__text-area">
       <h2 class="weui-msg__title">{{ title | d("正在跳转，请稍候")}}</h2>
-      <p class="weui-msg__desc">{{ userinfo }}</p>
+      <p class="weui-msg__desc">{{ userinfo | dump }}</p>
     </div>
   </div>
   <script>
     var redirect_uri = '{{redirect_uri}}';
-    var token = '{{token}}';
-    var userinfo = '{{userinfo}}';
+    var token = '{{ token }}';
+    var userinfo = '{{ userinfo | dump | safe }}';
 
     $(function() {
       sessionStorage.setItem('token', token);
       sessionStorage.setItem('user', userinfo);
+      // console.log('userinfo:', userinfo);
       window.location.replace(redirect_uri);
     });
   </script>

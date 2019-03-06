@@ -28,7 +28,7 @@ class AuthController extends Controller {
       await this.ctx.render('error.njk', { title: '参数错误', message: 'redirect_uri不能为空' });
     } else if (forTest) {
       const { userinfo, token } = await this.service.user.loginJwt({ userid: test });
-      await this.ctx.render('auth_test.njk', { userinfo: JSON.stringify(userinfo), token, redirect_uri });
+      await this.ctx.render('auth_test.njk', { userinfo, token, redirect_uri });
     } else {
       await this.ctx.render('auth_pc.njk', { corpId, redirect_uri });
     }
