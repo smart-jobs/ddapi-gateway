@@ -47,7 +47,7 @@ module.exports = appInfo => {
   };
 
   config.unit = {
-    apiUrl: 'http://localhost:8000/www/api/naf/unit/list',
+    apiUrl: 'http://smart.chinahuian.cn/www/api/naf/unit/list',
     expiresIn: 3000,
     dept_name: '省内高校',
   };
