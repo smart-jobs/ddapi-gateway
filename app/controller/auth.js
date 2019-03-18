@@ -18,7 +18,7 @@ class AuthController extends Controller {
       return;
     }
     if (!win && !forTest) {
-      await this.ctx.render('info.njk', { title: 'DingTalk', message: '请在钉钉中打开应用页面' });
+      await this.ctx.render('info.njk', { title: 'DingTalk', message: '请使用PC版钉钉打开应用' });
       return;
     }
 
