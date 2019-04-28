@@ -13,6 +13,5 @@ run/
 .travis.yml
 .appveyor.yml
 appveyor.yml
-config/config.prod.js
-config/config.local.js
+config/config.secret.js
 bak/
