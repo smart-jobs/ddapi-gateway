@@ -34,11 +34,6 @@ module.exports = appInfo => {
     },
   };
 
-  config.corpId = 'ding51e6fd2fdf22013a35c2f4657eb6378f';
-  config.appId = 213726900;
-  config.appKey = 'dingxqg4sgidsp6wvnz5';
-  config.appSecret = 'ew88Dcj5TGCeIzRaOR0camvOnBxEB00ex8GvcBT9Bn20idjRSE8l82qUfywQGo02';
-
   config.view = {
     defaultViewEngine: 'nunjucks',
     mapping: {
@@ -58,7 +53,6 @@ module.exports = appInfo => {
   };
 
   config.jwt = {
-    secret: 'Ziyouyanfa!@#',
     expiresIn: '2h',
     issuer: 'platform',
   };
