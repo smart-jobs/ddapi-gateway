@@ -12,8 +12,11 @@ class HomeController extends Controller {
     const access_token = await this.service.token.getToken();
     const queryStr = querystring.stringify({ ...this.ctx.query, access_token });
     const url = `https://oapi.dingtalk.com/${ctx.params[0]}?${queryStr}`;
+    const data = this.ctx.request.body;
+    const method = this.ctx.method;
     const result = await ctx.curl(url, {
-      data: this.ctx.request.body,
+      method,
+      data,
       dataType: 'json',
       contentType: 'json',
     });
@@ -25,7 +28,6 @@ class HomeController extends Controller {
     const token = await this.service.token.reqToken();
     this.ctx.body = `access token:${token}`;
   }
-
 }
 
 module.exports = HomeController;
