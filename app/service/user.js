@@ -11,7 +11,7 @@ class UserService extends TokenService {
     // TODO: 获取用户信息
     const key = `user_code:${code}`;
     const cached = await this.getCache(key);
-    const { userid } = cached || await this.apiGet('/user/getuserinfo', { code }, '获取用户信息失败');
+    const { userid } = cached || (await this.apiGet('/user/getuserinfo', { code }, '获取用户信息失败'));
     if (!cached) {
       await this.setCache(key, { userid });
     }
@@ -52,7 +52,10 @@ class UserService extends TokenService {
 
   async list_parent_names({ userid }) {
     const depts = await this.deptartment_list();
-    const names = depts.reduce((p, c) => { p[c.id] = c.name; return p; }, {});
+    const names = depts.reduce((p, c) => {
+      p[c.id] = c.name;
+      return p;
+    }, {});
     const list = await this.list_parent_depts({ userid });
     const rs = list.map(ids => {
       if (ids.length > 1) {
@@ -62,6 +65,12 @@ class UserService extends TokenService {
       return ids.map(id => names[id]).join('-');
     });
     return rs;
+  }
+
+  async user_dept_member({ deptId }) {
+    // TODO: 获取部门用户
+    const { userIds } = await this.apiGet('/user/getDeptMember', { deptId }, '获取部门用户失败');
+    return userIds;
   }
 
   async deptartment_list() {
@@ -92,15 +101,20 @@ class UserService extends TokenService {
 
     // TODO: 查找dingding部门信息
     const depts = await this.deptartment_list();
-    const names = depts.reduce((p, c) => { p[c.id] = c.name; return p; }, {});
+    const names = depts.reduce((p, c) => {
+      p[c.id] = c.name;
+      return p;
+    }, {});
     const list = await this.list_parent_depts({ userid });
-    const rs = list.map(ids => {
-      if (ids.length > 1) {
-        ids.pop();
-        ids.reverse();
-      }
-      return ids.map(id => names[id]);
-    }).find(p => p[0] === dept_name);
+    const rs = list
+      .map(ids => {
+        if (ids.length > 1) {
+          ids.pop();
+          ids.reverse();
+        }
+        return ids.map(id => names[id]);
+      })
+      .find(p => p[0] === dept_name);
     if (!_.isArray(rs) || rs.length < 2) return; // 非学校人员
 
     const units = await this.unit_list();
@@ -108,6 +122,21 @@ class UserService extends TokenService {
     if (!unit) throw new BusinessError(ErrorCode.SERVICE_FAULT, '查询用户所在单位信息失败');
     await this.setCache(key, unit, expires_in);
     return unit;
+  }
+
+  // 查询学校包含的用户
+  async unit_users({ unit }) {
+    const units = await this.unit_list();
+    const data = units.find(p => p.code === unit);
+    if (!unit) throw new BusinessError(ErrorCode.SERVICE_FAULT, '单位代码数据不存在');
+
+    // TODO: 查找dingding部门信息
+    const depts = await this.deptartment_list();
+    const dept = depts.find(p => p.name === data.name);
+    if (!dept) throw new BusinessError(ErrorCode.SERVICE_FAULT, '单位部门数据不存在');
+
+    // TODO: 根据部门ID查找用户ID
+    return await this.user_dept_member({ deptId: dept.id });
   }
 
   // 创建指定用户的登录凭证

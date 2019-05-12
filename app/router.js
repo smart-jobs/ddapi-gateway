@@ -13,5 +13,7 @@ module.exports = app => {
   router.get('/auth/test', controller.auth.test);
   router.all('/auth/userinfo', controller.auth.index);
   router.post('/auth/login', controller.auth.login);
-};
 
+  // 扩展API
+  router.get('/api/unit_users', controller.api.unit_users);
+};
